@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vidal Dep</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-card {
+            width: 360px;
+            background: #102542;
+            border-radius: 12px;
+            padding: 25px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .login-card h4 {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .login-card p {
+            font-size: 14px;
+            color: #cfd8dc;
+        }
+
+        .input-group-text {
+            background: #0b1d33;
+            border: none;
+            color: #9fbcd1;
+        }
+
+        .form-control {
+            background: #0b1d33;
+            border: none;
+            color: white;
+        }
+
+        .form-control::placeholder {
+            color: #9fbcd1;
+        }
+
+        .form-control:focus {
+            background: #0b1d33;
+            color: white;
+            box-shadow: none;
+        }
+
+        .btn-login {
+            background: linear-gradient(to right, #2196f3, #00c6ff);
+            border: none;
+            font-weight: bold;
+        }
+
+        .small-text {
+            font-size: 13px;
+            color: #9fbcd1;
+        }
+
+        a {
+            color: #4fc3f7;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        #msg {
+            font-size: 13px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-card text-center">
+    <i class="bi bi-person-circle fs-1"></i>
+    <h4>Vidal</h4>
+    
+
+    <!-- Username -->
+    <div class="input-group mb-3">
+        <span class="input-group-text"><i class="bi bi-person"></i></span>
+        <input id="username" class="form-control" placeholder="Username / Email">
+    </div>
+
+    <!-- Password -->
+    <div class="input-group mb-2">
+        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+        <input id="password" type="password" class="form-control" placeholder="Password">
+    </div>
+
+    <!-- Remember + Forgot (Disabled) -->
+    <div class="d-flex justify-content-between small-text mb-3">
+        <div>
+            <input type="checkbox"> Remember me
+        </div>
+        <a href="#" style="pointer-events: none; color: gray; cursor: not-allowed;">
+            Forgot Password
+        </a>
+    </div>
+
+    <button class="btn btn-login w-100" onclick="login()">Log in</button>
+
+    <div id="msg" class="text-danger text-center"></div>
+
+    <p class="small-text mt-3">
+        Don't have an account?
+        <a href="signup.html">Sign Up</a>
+    </p>
+</div>
+
+
+
+<script>
+function login() {
+    const uname = document.getElementById("username").value;
+
+    fetch("/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            username: uname,
+            password: document.getElementById("password").value
+        })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Invalid credentials");
+        return res.json();
+    })
+    .then(data => {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
+
+        localStorage.setItem("username", uname);
+	   
+
+        if (data.role === "ADMIN") {
+            window.location.href = "dashboard.html";
+        } else {
+            window.location.href = "dashboardemp.html";
+        }
+    })
+    .catch(err => {
+        document.getElementById("msg").innerText = err.message;
+    });
+}
+</script>
+
+
+</body>
+</html>
